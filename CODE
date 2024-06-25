@@ -1,0 +1,61 @@
+import datetime
+
+class BloodSampleTracker:
+    def __init__(self):
+        self.samples = {}
+
+    def add_sample(self, sample_id, patient_name, blood_type, collection_date):
+        if sample_id in self.samples:
+            print(f"Sample with ID {sample_id} already exists.")
+            return False
+        else:
+            self.samples[sample_id] = {
+                'Patient Name': patient_name,
+                'Blood Type': blood_type,
+                'Collection Date': collection_date,
+                'Logged Date': datetime.datetime.now()
+            }
+            print(f"Sample with ID {sample_id} added.")
+            return True
+
+    def update_sample(self, sample_id, patient_name=None, blood_type=None, collection_date=None):
+        if sample_id not in self.samples:
+            print(f"No sample found with ID {sample_id}.")
+            return False
+        else:
+            if patient_name:
+                self.samples[sample_id]['Patient Name'] = patient_name
+            if blood_type:
+                self.samples[sample_id]['Blood Type'] = blood_type
+            if collection_date:
+                self.samples[sample_id]['Collection Date'] = collection_date
+            print(f"Sample with ID {sample_id} updated.")
+            return True
+
+    def get_sample(self, sample_id):
+        if sample_id in self.samples:
+            return self.samples[sample_id]
+        else:
+            print(f"No sample found with ID {sample_id}.")
+            return None
+
+# Usage
+tracker = BloodSampleTracker()
+tracker.add_sample('001', 'Arjun Mathur', 'A-', '2024-06-18')
+print(tracker.get_sample('001'))
+tracker.update_sample('001', blood_type='O-')
+print(tracker.get_sample('001'))
+tracker.add_sample('001', 'jai Sharma', 'B+', '2024-06-19') 
+print(tracker.get_sample('001'))
+tracker.add_sample('002', 'Rahul Singh', 'A+', '2024-06-20')
+print(tracker.get_sample('002'))
+tracker.add_sample('003', 'Rajesh Kumar', 'AB-', '2024-06-21')  
+print(tracker.get_sample('002'))
+tracker.add_sample('004', 'mudeet mathur', 'A-', '2024-06-21')
+print(tracker.get_sample('004'))
+tracker.add_sample('005', 'Sarita Singh', 'O-', '2024-06-21')
+print(tracker.get_sample('005'))
+tracker.add_sample('5634', 'Aariya Mathur', 'AB-', '2024-06-21')
+print(tracker.get_sample('5634'))
+tracker.add_sample('5634', 'Aariya Mathur', 'AB-', '2024-06-21')
+print(tracker.get_sample('5634'))
