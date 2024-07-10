@@ -1,0 +1,65 @@
+pip install flask
+from flask import Flask, request, jsonify, render_template
+import datetime
+
+app = Flask(__name__)
+
+class BloodSampleTracker:
+    def __init__(self):
+        self.samples = {}
+
+    def add_sample(self, sample_id, patient_name, blood_type, collection_date):
+        if sample_id in self.samples:
+            return False
+        else:
+            self.samples[sample_id] = {
+                'Patient Name': patient_name,
+                'Blood Type': blood_type,
+                'Collection Date': collection_date,
+                'Logged Date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            return True
+
+    def update_sample(self, sample_id, patient_name=None, blood_type=None, collection_date=None):
+        if sample_id not in self.samples:
+            return False
+        else:
+            if patient_name:
+                self.samples[sample_id]['Patient Name'] = patient_name
+            if blood_type:
+                self.samples[sample_id]['Blood Type'] = blood_type
+            if collection_date:
+                self.samples[sample_id]['Collection Date'] = collection_date
+            return True
+
+    def get_sample(self, sample_id):
+        return self.samples.get(sample_id, None)
+
+tracker = BloodSampleTracker()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/add_sample', methods=['POST'])
+def add_sample():
+    data = request.get_json()
+    result = tracker.add_sample(data['sample_id'], data['patient_name'], data['blood_type'], data['collection_date'])
+    return jsonify({'success': result})
+
+@app.route('/update_sample', methods=['POST'])
+def update_sample():
+    data = request.get_json()
+    result = tracker.update_sample(data['sample_id'], data.get('patient_name'), data.get('blood_type'), data.get('collection_date'))
+    return jsonify({'success': result})
+
+@app.route('/get_sample/<sample_id>', methods=['GET'])
+def get_sample(sample_id):
+    sample = tracker.get_sample(sample_id)
+    if sample:
+        return jsonify(sample)
+    else:
+        return jsonify({'error': 'Sample not found'}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
