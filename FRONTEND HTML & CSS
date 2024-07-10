@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Sample Tracker</title>
+</head>
+<body>
+    <h1>Blood Sample Tracker</h1>
+    <form id="add-sample-form">
+        <h2>Add Sample</h2>
+        <label for="sample_id">Sample ID:</label>
+        <input type="text" id="sample_id" name="sample_id" required><br><br>
+        <label for="patient_name">Patient Name:</label>
+        <input type="text" id="patient_name" name="patient_name" required><br><br>
+        <label for="blood_type">Blood Type:</label>
+        <input type="text" id="blood_type" name="blood_type" required><br><br>
+        <label for="collection_date">Collection Date:</label>
+        <input type="date" id="collection_date" name="collection_date" required><br><br>
+        <button type="submit">Add Sample</button>
+    </form>
+
+    <form id="update-sample-form">
+        <h2>Update Sample</h2>
+        <label for="update_sample_id">Sample ID:</label>
+        <input type="text" id="update_sample_id" name="update_sample_id" required><br><br>
+        <label for="update_patient_name">Patient Name:</label>
+        <input type="text" id="update_patient_name" name="update_patient_name"><br><br>
+        <label for="update_blood_type">Blood Type:</label>
+        <input type="text" id="update_blood_type" name="update_blood_type"><br><br>
+        <label for="update_collection_date">Collection Date:</label>
+        <input type="date" id="update_collection_date" name="update_collection_date"><br><br>
+        <button type="submit">Update Sample</button>
+    </form>
+
+    <form id="get-sample-form">
+        <h2>Get Sample</h2>
+        <label for="get_sample_id">Sample ID:</label>
+        <input type="text" id="get_sample_id" name="get_sample_id" required><br><br>
+        <button type="submit">Get Sample</button>
+    </form>
+
+    <div id="sample-info"></div>
+
+    <script>
+        document.getElementById('add-sample-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const sampleId = document.getElementById('sample_id').value;
+            const patientName = document.getElementById('patient_name').value;
+            const bloodType = document.getElementById('blood_type').value;
+            const collectionDate = document.getElementById('collection_date').value;
+
+            fetch('/add_sample', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sample_id: sampleId,
+                    patient_name: patientName,
+                    blood_type: bloodType,
+                    collection_date: collectionDate
+                })
+            }).then(response => response.json()).then(data => {
+                alert(data.success ? 'Sample added successfully!' : 'Failed to add sample.');
+            });
+        });
+
+        document.getElementById('update-sample-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const sampleId = document.getElementById('update_sample_id').value;
+            const patientName = document.getElementById('update_patient_name').value;
+            const bloodType = document.getElementById('update_blood_type').value;
+            const collectionDate = document.getElementById('update_collection_date').value;
+
+            fetch('/update_sample', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sample_id: sampleId,
+                    patient_name: patientName,
+                    blood_type: bloodType,
+                    collection_date: collectionDate
+                })
+            }).then(response => response.json()).then(data => {
+                alert(data.success ? 'Sample updated successfully!' : 'Failed to update sample.');
+            });
+        });
+
+        document.getElementById('get-sample-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const sampleId = document.getElementById('get_sample_id').value;
+
+            fetch(`/get_sample/${sampleId}`).then(response => response.json()).then(data => {
+                const sampleInfoDiv = document.getElementById('sample-info');
+                if (data.error) {
+                    sampleInfoDiv.innerHTML = `<p>${data.error}</p>`;
+                } else {
+                    sampleInfoDiv.innerHTML = `
+                        <p>Sample ID: ${sampleId}</p>
+                        <p>Patient Name: ${data['Patient Name']}</p>
+                        <p>Blood Type: ${data['Blood Type']}</p>
+                        <p>Collection Date: ${data['Collection Date']}</p>
+                        <p>Logged Date: ${data['Logged Date']}</p>
+                    `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
